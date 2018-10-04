@@ -1,0 +1,6 @@
+.editorconfig
+.eslintignore
+.eslintrc.json
+example-content.txt
+package-lock.json
+node_modules
