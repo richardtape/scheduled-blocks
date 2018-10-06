@@ -1,19 +1,16 @@
-/**
- * #.# Common SCSS
- *
- * Can include things like variables and mixins
- * that are used across the project.
-*/
 /* Make the controls slightly further apart to aid readability */
 .scheduled-blocks-start-date-dropdown .components-base-control {
-  margin-bottom: 30px !important; }
+    margin-bottom: 30px !important;
+}
 
 /* The popover DateTime control needs some minor tweaks */
 .scheduled-blocks-start-date-popover .components-popover__content,
 .scheduled-blocks-end-date-popover .components-popover__content {
-  max-width: 250px !important; }
+    max-width: 250px !important;
+}
 
 .scheduled-blocks-start-date-popover .components-time-picker,
 .scheduled-blocks-end-date-popover .components-time-picker {
-  margin-top: 0;
-  padding: 10px; }
+    margin-top: 0;
+    padding: 10px;
+}

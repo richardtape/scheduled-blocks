@@ -11,7 +11,7 @@
  * Plugin Name:  Scheduled Blocks
  * Plugin URI:   https://scheduledblocks.com/
  * Description:  Schedule when your blocks should go live (and when they should stop being live)
- * Version:      0.0.1
+ * Version:      0.1.0
  * Author:       Richard Tape
  * Requires PHP: 7
  * Author URI:   https://scheduledblocks.com/
@@ -103,13 +103,18 @@ function the_content__scheduled_blocks_filter_content( $content ) {
 	// If now > scheduledStart and ( now < scheduledEnd or no scheduledEnd ) then leave it.
 	// if now < scheduledStart then remove
 	// if now > scheduledEnd then remove
-	$current_datetime = date( 'Y:m:d H:i:s' );
+	// Gutenberg saves the data in YYYY-MM-DDTHH:MM:SS
+	$current_datetime = date( 'Y-m-d H:i:s' );
 
 	foreach ( $scheduled_blocks as $id => $block ) {
 
 		if ( isset( $block['attrs']['scheduledStart'] ) ) {
 
-			$scheduled_start = DateTime::createFromFormat( 'Y:m:d H:i:s', $block['attrs']['scheduledStart'] )->format( 'Y:m:d H:i:s' );
+			// $scheduled_start = DateTime::createFromFormat( 'Y:m:d H:i:s', $block['attrs']['scheduledStart'] )->format( 'Y:m:d H:i:s' );
+			$scheduled_start = DateTime::createFromFormat( 'Y-m-d\TH:i:s', $block['attrs']['scheduledStart'] );
+			if ( is_a( $scheduled_start, 'DateTime' ) ) {
+				$scheduled_start = $scheduled_start->format( 'Y-m-d H:i:s' );
+			}
 
 			if ( $current_datetime <= $scheduled_start ) {
 				$block_ids_to_remove[] = $id;
@@ -118,7 +123,11 @@ function the_content__scheduled_blocks_filter_content( $content ) {
 
 		if ( isset( $block['attrs']['scheduledEnd'] ) ) {
 
-			$scheduled_end = DateTime::createFromFormat( 'Y:m:d H:i:s', $block['attrs']['scheduledEnd'] )->format( 'Y:m:d H:i:s' );
+			// $scheduled_end = DateTime::createFromFormat( 'Y:m:d H:i:s', $block['attrs']['scheduledEnd'] )->format( 'Y:m:d H:i:s' );
+			$scheduled_end = DateTime::createFromFormat( 'Y-m-d\TH:i:s', $block['attrs']['scheduledEnd'] );
+			if ( is_a( $scheduled_end, 'DateTime' ) ) {
+				$scheduled_end = $scheduled_end->format( 'Y-m-d H:i:s' );
+			}
 
 			if ( $current_datetime >= $scheduled_end ) {
 				$block_ids_to_remove[] = $id;
@@ -134,7 +143,13 @@ function the_content__scheduled_blocks_filter_content( $content ) {
 	// OK, we have some blocks to remove from the content.
 	foreach ( $block_ids_to_remove as $useless => $block_id_to_remove ) {
 
-		$this_block_to_remove        = $scheduled_blocks[ $block_id_to_remove ];
+		$this_block_to_remove = $scheduled_blocks[ $block_id_to_remove ];
+
+		// check if this is a 'special' block (which is basically a parent block with a schedule)
+		// if ( isset( $this_block_to_remove['special'] ) && true === $this_block_to_remove['special'] ) {
+
+		// }
+
 		$html_to_remove_from_content = $this_block_to_remove['innerHTML'];
 
 		$content = str_replace( $html_to_remove_from_content, '', $content );
@@ -174,21 +189,11 @@ function scheduled_blocks_extract_scheduled_blocks_from_content( $content ) {
 	// Find scheduled blocks and capture their innerHTML
 	foreach ( $blocks as $id => $block_details ) {
 
-		// Ensure that we only capture scheduled blocks
-		if ( ! isset( $block_details['attrs'] ) || empty( $block_details['attrs'] ) ) {
+		$this_block = scheduled_blocks_get_usable_data_from_block_details( $block_details );
+
+		if ( empty( $block_details ) ) {
 			continue;
 		}
-
-		if ( ! isset( $block_details['attrs']['scheduledStart'] ) && ! isset( $block_details['attrs']['scheduledEnd'] ) ) {
-			continue;
-		}
-
-		// OK this is a scheduled block.
-		$this_block = array(
-			'blockName' => $block_details['blockName'],
-			'attrs'     => $block_details['attrs'],
-			'innerHTML' => $block_details['innerHTML'],
-		);
 
 		$scheduled_blocks[] = $this_block;
 	}
@@ -197,6 +202,59 @@ function scheduled_blocks_extract_scheduled_blocks_from_content( $content ) {
 
 }// end scheduled_blocks_extract_scheduled_blocks_from_content()
 
+/**
+ * A (potentially recursive) function that extracts usable data for blocks
+ * that have a schedule component.
+ *
+ * @param array $block_details The name, attributes, and innerHTML of blocks
+ * @return array Either an empty array if it's not a scheduled block, or an array with block details
+ */
+function scheduled_blocks_get_usable_data_from_block_details( $block_details = array() ) {
+
+	// If we have innerBlocks AND (attrs['scheduledStart] or attrs['scheduledEnd'] then
+	// the user has added the schedule to the parent (think the columns block rather than
+	// the paragraph block inside a column). The innerHTML property for the parent block
+	// is simply the markup for the parent, it does not contain the markup for its children.
+	// We mark this as a special case and handle it differently when removing from the_content
+	if ( isset( $block_details['innerBlocks'] ) && is_array( $block_details['innerBlocks'] ) && ! empty( $block_details['innerBlocks'] ) && ( isset( $block_details['attrs']['scheduledStart'] ) || isset( $block_details['attrs']['scheduledEnd'] ) ) ) {
+
+		$this_block = array(
+			'blockName'   => $block_details['blockName'],
+			'attrs'       => $block_details['attrs'],
+			'innerHTML'   => $block_details['innerHTML'],
+			'innerBlocks' => $block_details['innerBlocks'],
+			'special'     => true,
+		);
+
+		return $this_block;
+
+	}
+
+	// If we have innerBlocks then we need to send them back around
+	if ( isset( $block_details['innerBlocks'] ) && is_array( $block_details['innerBlocks'] ) && ! empty( $block_details['innerBlocks'] ) ) {
+		foreach ( $block_details['innerBlocks'] as $id => $inner_block_details ) {
+			$block_details = scheduled_blocks_get_usable_data_from_block_details( $inner_block_details );
+		}
+	}
+
+	// Ensure that we only capture scheduled blocks
+	if ( ! isset( $block_details['attrs'] ) || empty( $block_details['attrs'] ) ) {
+		return array();
+	}
+
+	if ( ! isset( $block_details['attrs']['scheduledStart'] ) && ! isset( $block_details['attrs']['scheduledEnd'] ) ) {
+		return array();
+	}
+
+	$this_block = array(
+		'blockName' => $block_details['blockName'],
+		'attrs'     => $block_details['attrs'],
+		'innerHTML' => $block_details['innerHTML'],
+	);
+
+	return $this_block;
+
+}// end scheduled_blocks_get_usable_data_from_block_details()
 
 /**
  * The regex pattern for scheduled blocks
@@ -268,19 +326,56 @@ function scheduled_blocks_content_has_scheduled_blocks( $content = '' ) {
 }// end scheduled_blocks_content_has_scheduled_blocks()
 
 /**
- * Return the array of supported block types.
+ * Return the array of supported block types. $with_front allows us to use this
+ * function for sending the data as needed in our javascript, as well as using
+ * it for the regex to look at blocks.
  *
  * @param boolean $with_front Whether to append core/ to the front of each block name
  * @return array valid block types
  */
 function scheduled_blocks_get_valid_block_types( $with_front = true ) {
 
-	$front = ( true === $with_front ) ? 'core/' : '';
-
 	$valid_core_types = array(
-		$front . 'heading',
-		$front . 'paragraph',
+		'paragraph',
+		'image',
+		'heading',
+		'gallery',
+		'list',
+		'quote',
+		'shortcode',
+		'archives',
+		'audio',
+		'button',
+		'categories',
+		'code',
+		'columns',
+		'column',
+		'cover-image',
+		'embed',
+		'file',
+		'freeform',
+		'html',
+		'latest-comments',
+		'latest-posts',
+		'more',
+		'nextpage',
+		'preformatted',
+		'pullquote',
+		'separator',
+		'block',
+		'spacer',
+		'subhead',
+		'table',
+		'template',
+		'text-columns',
+		'verse',
+		'video',
 	);
+
+	// Prepend "core/" if we're passed $with_front
+	if ( true === $with_front ) {
+		$valid_core_types = preg_filter( '/^/', 'core/', $valid_core_types );
+	}
 
 	return apply_filters( 'scheduled_blocks_valid_block_types', $valid_core_types, $with_front );
 

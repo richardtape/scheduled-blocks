@@ -5,10 +5,12 @@ const { assign } = lodash;
 const { __ } = wp.i18n;
 const { Fragment } = wp.element;
 const { addFilter } = wp.hooks;
-const { TextControl, PanelBody } = wp.components;
-const { hasBlockSupport } = wp.blocks;
-const { createHigherOrderComponent } = wp.compose;
+const { TextControl, PanelBody, DateTimePicker, Dropdown } = wp.components;
+const { createHigherOrderComponent, withState } = wp.compose;
 const { InspectorControls } = wp.editor;
+const { getSettings } = wp.date;
+
+import './editor.scss';
 
 /**
  * Which block types supprt scheduling? This comes from PHP.
@@ -29,8 +31,7 @@ function isValidBlockType( name ) {
 }// end isValidBlockType()
 
 /**
- * Filters registered block settings, extending attributes with anchor using ID
- * of the first node.
+ * Filters registered block settings, extending attributes with our schedule data.
  *
  * @param {Object} settings Original block settings.
  *
@@ -46,6 +47,9 @@ export function addAttribute( settings ) {
 			scheduledStart: {
 				type: 'string',
 			},
+			scheduledEnd: {
+				type: 'string',
+			}
 		} );
 	}
 
@@ -54,16 +58,81 @@ export function addAttribute( settings ) {
 }// end addAttribute()
 
 /**
+ * To know if the current timezone is a 12 hour time with look for "a" in the time format.
+ * We also make sure this a is not escaped by a "/".
+ * @param {string} time
+ * @return bool
+ */
+function isTwelveHourTime( time ) {
+
+	var test = /a(?!\\)/i.test(
+		time
+			.toLowerCase() // Test only the lower case a
+			.replace( /\\\\/g, '' ) // Replace "//" with empty strings
+			.split( '' ).reverse().join( '' ) // Reverse the string and test for "a" not followed by a slash
+	);
+
+	return test;
+
+}// end isTwelveHourTime()
+
+/**
  * Override the default edit UI to include a new block inspector control for
- * assigning the anchor ID, if block supports anchor.
+ * assigning the scheduling, if block supports scheduling.
  *
  * @param {function|Component} BlockEdit Original component.
  *
  * @return {string} Wrapped component.
  */
-export const MyWithInspectorControl = createHigherOrderComponent( ( BlockEdit ) => {
+export const addScheduledBlockControls = createHigherOrderComponent( ( BlockEdit ) => {
 
 	return ( props ) => {
+
+		const ScheduledBlocksScheduleEndDateTimePicker = withState( {
+			date: new Date(),
+		} )( ( { date, setState } ) => {
+
+			const settings     = getSettings();
+			const is12HourTime = isTwelveHourTime( settings.formats.time );
+
+			// If we have a date saved in props, use that. Otherwise, use the current date.
+			return (
+				<DateTimePicker
+					currentDate={ props.attributes.scheduledEnd || date }
+					onChange={ ( newDate ) => {
+						setState( { newDate } );
+						props.setAttributes( {
+							scheduledEnd: newDate,
+						} );
+					} }
+					locale={ settings.l10n.locale }
+					is12Hour={ is12HourTime }
+					/>
+			);
+		} );
+
+		const ScheduledBlocksScheduleStartDateTimePicker = withState( {
+			date: new Date(),
+		} )( ( { date, setState } ) => {
+
+			const settings     = getSettings();
+			const is12HourTime = isTwelveHourTime( settings.formats.time );
+
+			// If we have a date saved in props, use that. Otherwise, use the current date.
+			return (
+				<DateTimePicker
+					currentDate={ props.attributes.scheduledStart || date }
+					onChange={ ( newDate ) => {
+						setState( { newDate } );
+						props.setAttributes( {
+							scheduledStart: newDate,
+						} );
+					} }
+					locale={ settings.l10n.locale }
+					is12Hour={ is12HourTime }
+					/>
+			);
+		} );
 
 		// If this block supports scheduling and is currently selected, add our UI
 		if ( isValidBlockType( props.name ) && props.isSelected ) {
@@ -72,15 +141,48 @@ export const MyWithInspectorControl = createHigherOrderComponent( ( BlockEdit ) 
 					<BlockEdit { ...props } />
 					<InspectorControls>
 						<PanelBody title={ __( 'Block Scheduling' ) }>
-							<TextControl
-								label={ __( 'Scheduled Start Date' ) }
-								help={ __( 'When this block should be published.' ) }
-								value={ props.attributes.scheduledStart || '' }
-								onChange={ ( nextValue ) => {
-									props.setAttributes( {
-										scheduledStart: nextValue,
-									} );
-								} } />
+							<Dropdown
+								className="scheduled-blocks-start-date-dropdown"
+								contentClassName="scheduled-blocks-start-date-popover"
+								position="bottom center"
+								renderToggle={ ( { isOpen, onToggle } ) => (
+									<TextControl
+										label={ __( '📅 Scheduled Start Date' ) }
+										onClick={ onToggle }
+										aria-expanded={ isOpen }
+										help={ __( 'When this block should be published.' ) }
+										value={ props.attributes.scheduledStart || '' }
+										onChange={ ( nextValue ) => {
+											props.setAttributes( {
+												scheduledStart: nextValue,
+											} );
+										} }
+									/>
+								) }
+								renderContent={ () => <ScheduledBlocksScheduleStartDateTimePicker /> }
+							/>
+
+							<Dropdown
+								className="scheduled-blocks-end-date-dropdown"
+								contentClassName="scheduled-blocks-end-date-popover"
+								position="bottom center"
+								renderToggle={ ( { onToggle, isOpen } ) => (
+									<TextControl
+										label={ __( '📅 Scheduled End Date' ) }
+										onClick={ onToggle }
+										aria-expanded={ isOpen }
+										help={ __( 'When this block should be unpublished.' ) }
+										value={ props.attributes.scheduledEnd || '' }
+										onChange={ ( nextValue ) => {
+											props.setAttributes( {
+												scheduledEnd: nextValue,
+											} );
+										} }
+									/>
+								) }
+								renderContent={ () => <ScheduledBlocksScheduleEndDateTimePicker /> }
+							/>
+
 						</PanelBody>
 					</InspectorControls>
 				</Fragment>
@@ -89,12 +191,11 @@ export const MyWithInspectorControl = createHigherOrderComponent( ( BlockEdit ) 
 
 		return <BlockEdit { ...props } />;
 	};
-}, 'MyWithInspectorControl' );
+}, 'addScheduledBlockControls' );
 
 /**
- * Override props assigned to save component to inject anchor ID, if block
- * supports anchor. This is only applied if the block's save result is an
- * element and not a markup string.
+ * Override props assigned to save component to inject our scheduled date and time.
+ * This is only done if the component is a block type on which you can schedule.
  *
  * @param {Object} extraProps Additional props applied to save element.
  * @param {Object} blockType  Block type.
@@ -107,11 +208,13 @@ export function addSaveProps( extraProps, blockType, attributes ) {
 	// If the current block supports scheduling, add our prop.
 	if ( isValidBlockType( blockType.name ) ) {
 		extraProps.scheduledStart = attributes.scheduledStart;
+		extraProps.scheduledEnd = attributes.scheduledEnd;
 	}
 
 	return extraProps;
+
 }// end addSaveProps()
 
 addFilter( 'blocks.registerBlockType', 'scheduled-blocks/add-attribute', addAttribute );
-addFilter( 'editor.BlockEdit', 'scheduled-blocks/with-inspector-control', MyWithInspectorControl );
+addFilter( 'editor.BlockEdit', 'scheduled-blocks/with-inspector-control', addScheduledBlockControls );
 addFilter( 'blocks.getSaveContent.extraProps', 'scheduled-blocks/save-props', addSaveProps );
