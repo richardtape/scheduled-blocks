@@ -250,9 +250,7 @@ class Scheduled_Blocks {
 		// We also need to take into account Reusable blocks. This has ['attrs]['ref']
 		// with a value of a post ID. That post content holds the raw content of this reusable block.
 		// This attribute gets set by our add-on.
-		if ( isset( $block_details['reusable'] ) ) {
-			do_action( 'scheduled_blocks_get_usable_data_from_block_details_handle_reusable', $block_details );
-		}
+		do_action( 'scheduled_blocks_get_usable_data_from_block_details_handle_special', $block_details );
 
 		// If we have innerBlocks then we need to send them back around
 		if ( isset( $block_details['innerBlocks'] ) && is_array( $block_details['innerBlocks'] ) && ! empty( $block_details['innerBlocks'] ) ) {
@@ -372,8 +370,6 @@ class Scheduled_Blocks {
 			'button',
 			'categories',
 			'code',
-			'columns',
-			'column',
 			'cover-image',
 			'embed',
 			'file',
@@ -386,7 +382,6 @@ class Scheduled_Blocks {
 			'preformatted',
 			'pullquote',
 			'separator',
-			// 'block', // Reusable blocks
 			'spacer',
 			'subhead',
 			'table',
@@ -396,12 +391,14 @@ class Scheduled_Blocks {
 			'video',
 		);
 
+		$valid_core_types = apply_filters( 'scheduled_blocks_valid_block_types', $valid_core_types, $with_front );
+
 		// Prepend "core/" if we're passed $with_front
 		if ( true === $with_front ) {
 			$valid_core_types = preg_filter( '/^/', 'core/', $valid_core_types );
 		}
 
-		return apply_filters( 'scheduled_blocks_valid_block_types', $valid_core_types, $with_front );
+		return $valid_core_types;
 
 	}//end scheduled_blocks_get_valid_block_types()
 
