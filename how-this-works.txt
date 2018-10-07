@@ -1,0 +1,29 @@
+We filter the_content() before Gutenberg
+    - check we're not in the admin
+    - check we have blocks
+    - check we have scheduled blocks
+    - extract scheduled blocks from the content ( scheduled_blocks_extract_scheduled_blocks_from_content() )
+        - Run the_content through the PEG Parser to get an array of blocks
+        - loop over this array to get the details for each block ( scheduled_blocks_get_usable_data_from_block_details() )
+            - We check if there's inner blocks and the parent block has a schedule. If so we set as special.
+            - We look if this block has a 'ref'. If so, this is a reusable block and
+                - Grab the post ID of the reusable block and parse the content of it
+                - We then grab and parse all the blocks in this reusable blocks post
+                - For each of those blocks we mark it as 'reusable' and send it back through this same function
+                - Where we catch this 'reusable' attribute and then fire an action so we can handle separately
+                - Separately (in an add-on) we determine if any of the blocks in this reusable block are scheduled
+                    - if they are, then we add the innerHTML of these blocks to an array to remove after Gutenberg has done its thing.
+            - if there are inner blocks but parent has no schedule, then we send back through
+            - if there's no scheduleStart/End then we return an empty array
+    - Now we loop over all of the blocks and create an array of blocks to remove
+        - compare current time with start/end schedules
+        - add to 'blocks to remove' array as necessary
+    - Now loop over all blocks to remove and search content for the innerHTML of each block to remove and strip
+    - return the_content stripped of scheduled blocks
+
+At this point, for reusable blocks, the actual parent reusable block is still in the content.
+It looks like <!-- wp:block {"ref":80} /-->
+
+Gutenberg now parses the content and will parse a reusable block into the real html.
+
+After Gutenberg has parsed, we hook back into the_content and remove the reusable blocks that need to be removed.

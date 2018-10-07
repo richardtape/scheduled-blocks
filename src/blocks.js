@@ -127,6 +127,10 @@ export const addScheduledBlockControls = createHigherOrderComponent( ( BlockEdit
 						props.setAttributes( {
 							scheduledStart: newDate,
 						} );
+						// add css style to block
+						// const domID = 'block-' + props.clientId;
+						// const thisBlock = document.getElementById( domID );
+						// thisBlock.classList.add( 'scheduled-block-content' );
 					} }
 					locale={ settings.l10n.locale }
 					is12Hour={ is12HourTime }
@@ -156,6 +160,7 @@ export const addScheduledBlockControls = createHigherOrderComponent( ( BlockEdit
 											props.setAttributes( {
 												scheduledStart: nextValue,
 											} );
+
 										} }
 									/>
 								) }

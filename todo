@@ -1,9 +1,12 @@
-- [ ] Add appropriate blocks to scheduled_blocks_get_valid_block_types()
-- [ ] Change text input to a date/time component in blocks.js
-- [ ] Add Scheduled End component
-- [ ] See if it's possible to style blocks in dashboard when they are scheduled
-- [ ] Test with nestable blocks (i.e. blocks in columns)
-- [ ] Look at custom blocks by (for example) Gravity Forms, and ensure we can add scheduling in separate plugin
-- [ ] Rename blocks.js to something more appropriate
-- [ ] Write readme
-- [ ] Create screencast
+- [ ✔ ] Test with nestable blocks (i.e. blocks in columns)
+- [ ✔ ] Change text input to a date/time component in blocks.js
+- [ ✔ ] Add Scheduled End component
+- [ ✔ ] Add appropriate blocks to scheduled_blocks_get_valid_block_types()
+- [ ✔ ] Work out reusable blocks
+- [  ] Test with the parent block being scheduled (i.e. columns themselves)
+- [  ] See if it's possible to style blocks in dashboard when they are scheduled
+- [  ] Look at custom blocks by (for example) Gravity Forms, and ensure we can add scheduling in separate plugin
+- [  ] Look at adding custom unique classes for each block so it's safer to remove them from the content
+- [  ] Rename blocks.js to something more appropriate
+- [  ] Write readme
+- [  ] Create screencast
