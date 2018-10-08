@@ -299,9 +299,6 @@ class Scheduled_Blocks {
 						'|',                   // Join block names into capture group alternation.
 						array_map(
 							'preg_quote',    // Escape block name for regular expression.
-							// array(
-							// 	'heading',
-							// )
 							$this->scheduled_blocks_get_valid_block_types( false )
 						)
 					)
@@ -393,12 +390,15 @@ class Scheduled_Blocks {
 
 		$valid_core_types = apply_filters( 'scheduled_blocks_valid_block_types', $valid_core_types, $with_front );
 
+		// Custom add-ons will always provide the namespace.
+		$valid_addon_types = apply_filters( 'scheduled_blocks_valid_addon_block_types', array(), $with_front );
+
 		// Prepend "core/" if we're passed $with_front
 		if ( true === $with_front ) {
 			$valid_core_types = preg_filter( '/^/', 'core/', $valid_core_types );
 		}
 
-		return $valid_core_types;
+		return array_merge( $valid_core_types, $valid_addon_types );
 
 	}//end scheduled_blocks_get_valid_block_types()
 
