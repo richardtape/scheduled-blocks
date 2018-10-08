@@ -212,8 +212,8 @@ export function addSaveProps( extraProps, blockType, attributes ) {
 
 	// If the current block supports scheduling, add our prop.
 	if ( isValidBlockType( blockType.name ) ) {
-		extraProps.scheduledStart = attributes.scheduledStart;
-		extraProps.scheduledEnd = attributes.scheduledEnd;
+		extraProps.scheduledstart = attributes.scheduledStart;
+		extraProps.scheduledend = attributes.scheduledEnd;
 	}
 
 	return extraProps;
