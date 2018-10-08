@@ -30,6 +30,12 @@ Schedule when your blocks should go live (and when they should stop being live)
 == Changelog ==
 
 ------------------------------------------------------------------------------------------------------------------
+Version 0.2.4
+	- Added thank-yous.txt file as a way of giving credit to the folks who make this possible.
+
+------------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------------------------
 Version 0.2.3
 	- Added software licensing
 	- Added GPL license

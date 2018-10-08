@@ -5,13 +5,13 @@
  * @package     scheduled-blocks
  * @author      Richard Tape
  * @copyright   2018 Richard Tape
- * @license     GPL-2.0+
+ * @license     GPL-3.0+
  *
  * @wordpress-plugin
  * Plugin Name:  Scheduled Blocks
  * Plugin URI:   https://scheduledblocks.com/
  * Description:  Schedule when your blocks should go live (and when they should stop being live)
- * Version:      0.2.3
+ * Version:      0.2.4
  * Author:       Richard Tape
  * Requires PHP: 7
  * Author URI:   https://scheduledblocks.com/

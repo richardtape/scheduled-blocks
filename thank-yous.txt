@@ -1,0 +1,11 @@
+Everyone (apart from me, obviously. Thanking myself would be weird. Self Five!) who
+has donated time, patience, brain capacity, code, design, care, and love to the
+WordPress.org project. Including Mike Little and Matt Mullenweg for kicking the
+whole thing off.
+
+Everyone who has worked on Gutenberg. I truly believe it's the future of not just
+WordPress, but content management systems.
+
+Software licensing and plugin updates provided by
+    Yahnis Elsts : https://github.com/YahnisElsts/plugin-update-checker
+    Alexandre Froger : https://github.com/froger-me/wp-plugin-update-server
