@@ -18,5 +18,40 @@
   margin-top: 0;
   padding: 10px; }
 
-.scheduled-block-content {
-  background: red !important; }
+/* Nice calendar/clock icon to mark when a block is scheduled and also for the label for the control */
+.scheduled-blocks-start-date-dropdown label:before,
+.scheduled-blocks-end-date-dropdown label:before,
+.scheduled-block-content:before {
+  content: url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 203.543 203.543' xmlns:xlink='http://www.w3.org/1999/xlink' enable-background='new 0 0 203.543 203.543'><g><path d='m194.139,11.918h-39.315v-5.918c0-3.313-2.687-6-6-6s-6,2.687-6,6v5.918h-35.053v-5.918c0-3.313-2.687-6-6-6s-6,2.687-6,6v5.918h-33.563v-5.918c0-3.313-2.687-6-6-6s-6,2.687-6,6v5.918h-40.804c-3.313,0-6,2.687-6,6v135.572c0,3.313 2.687,6 6,6h36.826c5.901,25.214 28.555,44.053 55.541,44.053s49.64-18.84 55.541-44.053h36.826c3.313,0 6-2.687 6-6v-135.572c0.001-3.313-2.685-6-5.999-6zm-143.931,12v5.422c0,3.313 2.687,6 6,6s6-2.687 6-6v-5.422h33.563v5.422c0,3.313 2.687,6 6,6s6-2.687 6-6v-5.422h35.053v5.422c0,3.313 2.687,6 6,6s6-2.687 6-6v-5.422h33.315v24.536h-172.735v-24.536h34.804zm51.563,167.625c-24.842,0-45.053-20.211-45.053-45.053s20.211-45.053 45.053-45.053 45.053,20.21 45.053,45.053-20.21,45.053-45.053,45.053zm57.028-44.053c0.006-0.334 0.025-0.665 0.025-1 0-31.459-25.594-57.053-57.053-57.053s-57.053,25.594-57.053,57.053c0,0.335 0.02,0.666 0.025,1h-29.34v-87.035h172.735v87.035h-29.339z'/><path d='m107.771,148.004v-29.026c0-3.313-2.687-6-6-6s-6,2.687-6,6v31.512c0,1.591 0.632,3.117 1.757,4.243l13.79,13.791c1.172,1.171 2.707,1.757 4.243,1.757 1.535,0 3.071-0.586 4.243-1.757 2.343-2.343 2.343-6.142 0-8.485l-12.033-12.035z'/></g></svg>"); }
+
+/* When a block is selected and a schedule is added, we get 2 classes, so we hide one and adjust position of one */
+.editor-block-list__block.scheduled-block-content:before {
+  position: absolute;
+  left: 101%; }
+
+.scheduled-block-content .scheduled-block-content:before {
+  content: ''; }
+
+.scheduled-blocks-start-date-dropdown label:before,
+.scheduled-blocks-end-date-dropdown label:before {
+  display: block;
+  float: left;
+  height: 16px;
+  width: 16px;
+  margin-right: 6px;
+  top: 3px;
+  position: relative; }
+
+.scheduled-block-content:before {
+  display: block;
+  height: 16px;
+  width: 16px;
+  opacity: 0.5;
+  float: right;
+  position: relative;
+  right: -36px;
+  top: 0; }
+
+/* Adjust position of icon for image block */
+div[data-type="core/image"] .scheduled-block-content:before {
+  top: 12px; }

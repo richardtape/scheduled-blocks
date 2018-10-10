@@ -77,6 +77,47 @@ function isTwelveHourTime( time ) {
 }// end isTwelveHourTime()
 
 /**
+ * Add a class to the classList to the passed block ID.
+ *
+ * @param {string} ID The ID of the block to which we want to add the class.
+ */
+function addToClassList( ID ) {
+
+	const domID     = 'block-' + ID;
+	const thisBlock = document.getElementById( domID );
+
+	thisBlock.classList.add( 'scheduled-block-content' );
+
+}// end addToClassList
+
+/**
+ * Add a custom className to blocks which our scheduled.
+ */
+export const addCustomClassName = createHigherOrderComponent( ( BlockEdit ) => {
+
+	return ( props ) => {
+
+		if ( ( typeof props.attributes.scheduledStart === "undefined" || "" === props.attributes.scheduledStart ) && ( typeof props.attributes.scheduledEnd === "undefined" || "" === props.attributes.scheduledEnd ) ) {
+			return <BlockEdit { ...props } />;
+		}
+
+		let className = props.attributes.className || '';
+        className += ' scheduled-block-content';
+
+        const rest = {
+            ...props,
+            attributes: {
+                ...props.attributes,
+                className,
+            },
+		};
+
+        return <BlockEdit {...rest} />
+	}
+
+}, 'addCustomClassName' );
+
+/**
  * Override the default edit UI to include a new block inspector control for
  * assigning the scheduling, if block supports scheduling.
  *
@@ -104,6 +145,7 @@ export const addScheduledBlockControls = createHigherOrderComponent( ( BlockEdit
 						props.setAttributes( {
 							scheduledEnd: newDate,
 						} );
+						addToClassList( props.clientId );
 					} }
 					locale={ settings.l10n.locale }
 					is12Hour={ is12HourTime }
@@ -128,9 +170,7 @@ export const addScheduledBlockControls = createHigherOrderComponent( ( BlockEdit
 							scheduledStart: newDate,
 						} );
 						// add css style to block
-						// const domID = 'block-' + props.clientId;
-						// const thisBlock = document.getElementById( domID );
-						// thisBlock.classList.add( 'scheduled-block-content' );
+						addToClassList( props.clientId );
 					} }
 					locale={ settings.l10n.locale }
 					is12Hour={ is12HourTime }
@@ -151,10 +191,10 @@ export const addScheduledBlockControls = createHigherOrderComponent( ( BlockEdit
 								position="bottom center"
 								renderToggle={ ( { isOpen, onToggle } ) => (
 									<TextControl
-										label={ __( '📅 Scheduled Start Date' ) }
+										label={ __( 'Scheduled Start Date/Time' ) }
 										onClick={ onToggle }
 										aria-expanded={ isOpen }
-										help={ __( 'When this block should be published.' ) }
+										help={ __( 'When this block will be shown.' ) }
 										value={ props.attributes.scheduledStart || '' }
 										onChange={ ( nextValue ) => {
 											props.setAttributes( {
@@ -173,10 +213,10 @@ export const addScheduledBlockControls = createHigherOrderComponent( ( BlockEdit
 								position="bottom center"
 								renderToggle={ ( { onToggle, isOpen } ) => (
 									<TextControl
-										label={ __( '📅 Scheduled End Date' ) }
+										label={ __( 'Scheduled End Date/Time' ) }
 										onClick={ onToggle }
 										aria-expanded={ isOpen }
-										help={ __( 'When this block should be unpublished.' ) }
+										help={ __( 'When this block will stop being shown.' ) }
 										value={ props.attributes.scheduledEnd || '' }
 										onChange={ ( nextValue ) => {
 											props.setAttributes( {
@@ -209,13 +249,28 @@ export const addScheduledBlockControls = createHigherOrderComponent( ( BlockEdit
  * @return {Object} Filtered props applied to save element.
  */
 export function addSaveProps( extraProps, blockType, attributes ) {
-
+// console.log( ['addSaveProps',blockType,extraProps,attributes] );
 	// If the current block supports scheduling, add our prop.
 	if ( isValidBlockType( blockType.name ) ) {
 		extraProps.scheduledstart = attributes.scheduledStart;
-		extraProps.scheduledend = attributes.scheduledEnd;
+		extraProps.scheduledend   = attributes.scheduledEnd;
 	}
 
+	// If this block already has a non-empty schedule, add a custom class.
+	//scheduled-block-content
+	if ( typeof extraProps.scheduledstart === "undefined" && typeof extraProps.scheduledend === "undefined" ) {
+		return extraProps;
+	}
+
+	// At least one of our extra props has a value, add our class
+	var currentClassName = extraProps.className;
+	if ( typeof currentClassName === 'undefined' || currentClassName === 'undefined' ) {
+		var newClassName = 'scheduled-block-content';
+	} else {
+		var newClassName = currentClassName + ' scheduled-block-content';
+	}
+
+	extraProps.className = newClassName;
 	return extraProps;
 
 }// end addSaveProps()
@@ -223,3 +278,5 @@ export function addSaveProps( extraProps, blockType, attributes ) {
 addFilter( 'blocks.registerBlockType', 'scheduled-blocks/add-attribute', addAttribute );
 addFilter( 'editor.BlockEdit', 'scheduled-blocks/with-inspector-control', addScheduledBlockControls );
 addFilter( 'blocks.getSaveContent.extraProps', 'scheduled-blocks/save-props', addSaveProps );
+
+addFilter( 'editor.BlockEdit', 'scheduled-blocks/add-custom-class-name', addCustomClassName );

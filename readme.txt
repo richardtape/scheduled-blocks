@@ -30,6 +30,13 @@ Schedule when your blocks should go live (and when they should stop being live)
 == Changelog ==
 
 ------------------------------------------------------------------------------------------------------------------
+Version 0.2.5
+	- Added subtle icon to scheduled blocks shown in the editor window
+	- Changed to the update/license stuff only loading in the admin
+
+------------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------------------------
 Version 0.2.4
 	- Added thank-yous.txt file as a way of giving credit to the folks who make this possible.
 
