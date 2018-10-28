@@ -16,18 +16,23 @@ Schedule when your blocks should go live (and when they should stop being live)
 
 == Installation ==
 
-1. Purchase from scheduledblocks.com
-2. Go to your WordPress dashboard and click plugins
-3. Click Add New
-4. Click 'Upload Plugin' near the top of the page
-5. Click the 'Choose File' button and locate the zip file you downloaded after your purchase.
-6. Click 'install now'
-7. Go to the 'Installed Plugins' link in the sidebar
-8. Find 'Scheduled Blocks' and click 'Activate'
-9. Paste your license key from the email you received after your purchase into the box below the Scheduled Blocks plugin.
-10. You're done!
+1. Copy this directory to your plugins directory
+2. Find Scheduled Blocks in your wp-admin/plugins.php page
+3. Click activate
+4. Now, whenever you select a block, you will see 'Block Scheduling'
+5. Click in either (or both) of the Start/End date fields and choose your desired date/time.
+6. You will be able to see which blocks are scheduled as a small date/time icon is presented next
+   to them in the main editor window.
 
 == Changelog ==
+
+------------------------------------------------------------------------------------------------------------------
+Version 0.3.0
+	- Removed Licensing entirely, this should be open source and will be
+	- First dev/public version after I sent out a tweet and more people were interested than I thought. Mild panic
+	  ensued.
+
+------------------------------------------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------------------------------------------
 Version 0.2.5

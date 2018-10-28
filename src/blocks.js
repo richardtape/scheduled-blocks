@@ -60,6 +60,7 @@ export function addAttribute( settings ) {
 /**
  * To know if the current timezone is a 12 hour time with look for "a" in the time format.
  * We also make sure this a is not escaped by a "/".
+ *
  * @param {string} time
  * @return bool
  */
@@ -91,16 +92,18 @@ function addToClassList( ID ) {
 }// end addToClassList
 
 /**
- * Add a custom className to blocks which our scheduled.
+ * Add a custom className to blocks which are scheduled.
  */
 export const addCustomClassName = createHigherOrderComponent( ( BlockEdit ) => {
 
 	return ( props ) => {
 
+		// Ensure that we have a scheduledStart or scheduledEnd
 		if ( ( typeof props.attributes.scheduledStart === "undefined" || "" === props.attributes.scheduledStart ) && ( typeof props.attributes.scheduledEnd === "undefined" || "" === props.attributes.scheduledEnd ) ) {
 			return <BlockEdit { ...props } />;
 		}
 
+		// OK, yep, we have a non-empty schedule, so let's add an icon.
 		let className = props.attributes.className || '';
         className += ' scheduled-block-content';
 
@@ -249,7 +252,7 @@ export const addScheduledBlockControls = createHigherOrderComponent( ( BlockEdit
  * @return {Object} Filtered props applied to save element.
  */
 export function addSaveProps( extraProps, blockType, attributes ) {
-// console.log( ['addSaveProps',blockType,extraProps,attributes] );
+
 	// If the current block supports scheduling, add our prop.
 	if ( isValidBlockType( blockType.name ) ) {
 		extraProps.scheduledstart = attributes.scheduledStart;
@@ -257,18 +260,14 @@ export function addSaveProps( extraProps, blockType, attributes ) {
 	}
 
 	// If this block already has a non-empty schedule, add a custom class.
-	//scheduled-block-content
 	if ( typeof extraProps.scheduledstart === "undefined" && typeof extraProps.scheduledend === "undefined" ) {
 		return extraProps;
 	}
 
 	// At least one of our extra props has a value, add our class
 	var currentClassName = extraProps.className;
-	if ( typeof currentClassName === 'undefined' || currentClassName === 'undefined' ) {
-		var newClassName = 'scheduled-block-content';
-	} else {
-		var newClassName = currentClassName + ' scheduled-block-content';
-	}
+
+	var newClassName = ( typeof currentClassName === 'undefined' || currentClassName === 'undefined' ) ? 'scheduled-block-content' : currentClassName + ' scheduled-block-content';
 
 	extraProps.className = newClassName;
 	return extraProps;
@@ -278,5 +277,4 @@ export function addSaveProps( extraProps, blockType, attributes ) {
 addFilter( 'blocks.registerBlockType', 'scheduled-blocks/add-attribute', addAttribute );
 addFilter( 'editor.BlockEdit', 'scheduled-blocks/with-inspector-control', addScheduledBlockControls );
 addFilter( 'blocks.getSaveContent.extraProps', 'scheduled-blocks/save-props', addSaveProps );
-
 addFilter( 'editor.BlockEdit', 'scheduled-blocks/add-custom-class-name', addCustomClassName );
