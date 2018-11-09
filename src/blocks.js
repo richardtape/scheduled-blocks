@@ -132,6 +132,10 @@ export const addScheduledBlockControls = createHigherOrderComponent( ( BlockEdit
 
 	return ( props ) => {
 
+		if ( ! isValidBlockType( props.name ) || ! props.isSelected ) {
+			return <BlockEdit { ...props } />;
+		}
+
 		const ScheduledBlocksScheduleEndDateTimePicker = withState( {
 			date: new Date(),
 		} )( ( { date, setState } ) => {
@@ -181,63 +185,59 @@ export const addScheduledBlockControls = createHigherOrderComponent( ( BlockEdit
 			);
 		} );
 
-		// If this block supports scheduling and is currently selected, add our UI
-		if ( isValidBlockType( props.name ) && props.isSelected ) {
-			return (
-				<Fragment>
-					<BlockEdit { ...props } />
-					<InspectorControls>
-						<PanelBody title={ __( 'Block Scheduling' ) }>
-							<Dropdown
-								className="scheduled-blocks-start-date-dropdown"
-								contentClassName="scheduled-blocks-start-date-popover"
-								position="bottom center"
-								renderToggle={ ( { isOpen, onToggle } ) => (
-									<TextControl
-										label={ __( 'Scheduled Start Date/Time' ) }
-										onClick={ onToggle }
-										aria-expanded={ isOpen }
-										help={ __( 'When this block will be shown.' ) }
-										value={ props.attributes.scheduledStart || '' }
-										onChange={ ( nextValue ) => {
-											props.setAttributes( {
-												scheduledStart: nextValue,
-											} );
+		return (
+			<Fragment>
+				<BlockEdit { ...props } />
+				<InspectorControls>
+					<PanelBody title={ __( 'Block Scheduling' ) }>
+						<Dropdown
+							className="scheduled-blocks-start-date-dropdown"
+							contentClassName="scheduled-blocks-start-date-popover"
+							position="bottom center"
+							renderToggle={ ( { isOpen, onToggle } ) => (
+								<TextControl
+									label={ __( 'Scheduled Start Date/Time' ) }
+									onClick={ onToggle }
+									aria-expanded={ isOpen }
+									help={ __( 'When this block will be shown.' ) }
+									value={ props.attributes.scheduledStart || '' }
+									onChange={ ( nextValue ) => {
+										props.setAttributes( {
+											scheduledStart: nextValue,
+										} );
 
-										} }
-									/>
-								) }
-								renderContent={ () => <ScheduledBlocksScheduleStartDateTimePicker /> }
-							/>
+									} }
+								/>
+							) }
+							renderContent={ () => <ScheduledBlocksScheduleStartDateTimePicker /> }
+						/>
 
-							<Dropdown
-								className="scheduled-blocks-end-date-dropdown"
-								contentClassName="scheduled-blocks-end-date-popover"
-								position="bottom center"
-								renderToggle={ ( { onToggle, isOpen } ) => (
-									<TextControl
-										label={ __( 'Scheduled End Date/Time' ) }
-										onClick={ onToggle }
-										aria-expanded={ isOpen }
-										help={ __( 'When this block will stop being shown.' ) }
-										value={ props.attributes.scheduledEnd || '' }
-										onChange={ ( nextValue ) => {
-											props.setAttributes( {
-												scheduledEnd: nextValue,
-											} );
-										} }
-									/>
-								) }
-								renderContent={ () => <ScheduledBlocksScheduleEndDateTimePicker /> }
-							/>
+						<Dropdown
+							className="scheduled-blocks-end-date-dropdown"
+							contentClassName="scheduled-blocks-end-date-popover"
+							position="bottom center"
+							renderToggle={ ( { onToggle, isOpen } ) => (
+								<TextControl
+									label={ __( 'Scheduled End Date/Time' ) }
+									onClick={ onToggle }
+									aria-expanded={ isOpen }
+									help={ __( 'When this block will stop being shown.' ) }
+									value={ props.attributes.scheduledEnd || '' }
+									onChange={ ( nextValue ) => {
+										props.setAttributes( {
+											scheduledEnd: nextValue,
+										} );
+									} }
+								/>
+							) }
+							renderContent={ () => <ScheduledBlocksScheduleEndDateTimePicker /> }
+						/>
 
-						</PanelBody>
-					</InspectorControls>
-				</Fragment>
-			);
-		}
+					</PanelBody>
+				</InspectorControls>
+			</Fragment>
+		);
 
-		return <BlockEdit { ...props } />;
 	};
 }, 'addScheduledBlockControls' );
 

@@ -27,6 +27,12 @@ Schedule when your blocks should go live (and when they should stop being live)
 == Changelog ==
 
 ------------------------------------------------------------------------------------------------------------------
+Version 0.4.0
+	- First true public release after some tidying up.
+
+------------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------------------------
 Version 0.3.0
 	- Removed Licensing entirely, this should be open source and will be
 	- First dev/public version after I sent out a tweet and more people were interested than I thought. Mild panic

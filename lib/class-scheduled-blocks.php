@@ -38,8 +38,6 @@ class Scheduled_Blocks {
 		// Filter the_content to remove appropriate scheduled blocks before Gutenberg parses it
 		add_filter( 'the_content', array( $this, 'the_content__scheduled_blocks_filter_content' ), 5 );
 
-		add_filter( 'http_request_args', array( $this, 'http_request_args__allow_local_https' ), 99, 2 );
-
 	}// end add_hooks()
 
 	/**
@@ -403,22 +401,5 @@ class Scheduled_Blocks {
 		return array_merge( $valid_core_types, $valid_addon_types );
 
 	}//end scheduled_blocks_get_valid_block_types()
-
-	/**
-	 * Allow software license checks when using our .local URL for SSL
-	 *
-	 * @param array $r The current request params
-	 * @param string $url The URL being requested
-	 * @return array The modified params if we're on our local domain.
-	 */
-	public function http_request_args__allow_local_https( $r, $url ) {
-
-		if ( strpos( $url, 'https://scheduledblocksdotcom.local' ) !== false ) {
-			$r['sslverify'] = false;
-		}
-
-		return $r;
-
-	}// end http_request_args__allow_local_https()
 
 }// end class Scheduled_Blocks
