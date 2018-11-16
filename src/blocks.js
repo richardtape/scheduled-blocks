@@ -8,7 +8,8 @@ const { addFilter } = wp.hooks;
 const { TextControl, PanelBody, DateTimePicker, Dropdown } = wp.components;
 const { createHigherOrderComponent, withState } = wp.compose;
 const { InspectorControls } = wp.editor;
-const { getSettings } = wp.date;
+// const { getSettings } = wp.date;
+const { __experimentalGetSettings } = wp.date;
 
 import './editor.scss';
 
@@ -140,7 +141,7 @@ export const addScheduledBlockControls = createHigherOrderComponent( ( BlockEdit
 			date: new Date(),
 		} )( ( { date, setState } ) => {
 
-			const settings     = getSettings();
+			const settings     = __experimentalGetSettings();
 			const is12HourTime = isTwelveHourTime( settings.formats.time );
 
 			// If we have a date saved in props, use that. Otherwise, use the current date.
@@ -164,7 +165,7 @@ export const addScheduledBlockControls = createHigherOrderComponent( ( BlockEdit
 			date: new Date(),
 		} )( ( { date, setState } ) => {
 
-			const settings     = getSettings();
+			const settings     = __experimentalGetSettings();
 			const is12HourTime = isTwelveHourTime( settings.formats.time );
 
 			// If we have a date saved in props, use that. Otherwise, use the current date.

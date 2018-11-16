@@ -211,6 +211,10 @@ class Scheduled_Blocks {
 			require_once plugin_dir_path( dirname( dirname( __FILE__ ) ) ) . 'gutenberg/lib/parser.php';
 		}
 
+		if ( ! function_exists( '_gutenberg_utf8_split' ) ) {
+			require_once plugin_dir_path( dirname( dirname( __FILE__ ) ) ) . 'gutenberg/lib/compat.php';
+		}
+
 		$parser = new Gutenberg_PEG_Parser();
 		$blocks = $parser->parse( _gutenberg_utf8_split( $content ) );
 
