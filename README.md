@@ -1,4 +1,4 @@
-=== Scheduled Blocks ===
+# Scheduled Blocks
 Contributors: iamfriendly
 Donate link: https://girlswhocode.com/
 Tags: gutenberg, scheduled, blocks
@@ -8,15 +8,13 @@ Requires PHP: 7.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-**Note:** This still requires you to have the Gutenberg plugin installed (but not necessarily active). Now that the
-API has settled in core, I'll be making some changes to ensure that you don't need that, and will use the native
-code in WP.
+**Note:** This requires you to have the Gutenberg plugin installed (but not necessarily active). Now that the API has settled in core, I'll be making some changes to ensure that you don't need that, and will use the native code in WP.
 
-== Description ==
+## Description
 
 Schedule when your blocks should go live (and when they should stop being live)
 
-== Installation ==
+## Installation
 
 1. Copy this directory to your plugins directory
 2. Find Scheduled Blocks in your wp-admin/plugins.php page
@@ -26,7 +24,7 @@ Schedule when your blocks should go live (and when they should stop being live)
 6. You will be able to see which blocks are scheduled as a small date/time icon is presented next
    to them in the main editor window.
 
-== Changelog ==
+## Changelog ==
 
 ------------------------------------------------------------------------------------------------------------------
 Version 0.5.0
