@@ -206,17 +206,8 @@ class Scheduled_Blocks {
 	 */
 	public static function scheduled_blocks_extract_scheduled_blocks_from_content( $content ) {
 
-		// @todo When moved to core, change this
-		if ( ! class_exists( 'Gutenberg_PEG_Parser' ) ) {
-			require_once plugin_dir_path( dirname( dirname( __FILE__ ) ) ) . 'gutenberg/lib/parser.php';
-		}
-
-		if ( ! function_exists( '_gutenberg_utf8_split' ) ) {
-			require_once plugin_dir_path( dirname( dirname( __FILE__ ) ) ) . 'gutenberg/lib/compat.php';
-		}
-
-		$parser = new Gutenberg_PEG_Parser();
-		$blocks = $parser->parse( _gutenberg_utf8_split( $content ) );
+		$parser = new WP_Block_Parser();
+		$blocks = $new_parser->parse( $content );
 
 		if ( empty( $blocks ) ) {
 			return array();

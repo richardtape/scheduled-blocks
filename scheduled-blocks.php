@@ -11,7 +11,7 @@
  * Plugin Name:  Scheduled Blocks
  * Plugin URI:   https://scheduledblocks.com/
  * Description:  Schedule when your blocks should go live (and when they should stop being live)
- * Version:      0.5.0
+ * Version:      0.6.0
  * Author:       Richard Tape
  * Requires PHP: 7
  * Author URI:   https://scheduledblocks.com/

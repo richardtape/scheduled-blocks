@@ -8,10 +8,6 @@ Requires PHP: 7.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-**Note:** This still requires you to have the Gutenberg plugin installed (but not necessarily active). Now that the
-API has settled in core, I'll be making some changes to ensure that you don't need that, and will use the native
-code in WP.
-
 == Description ==
 
 Schedule when your blocks should go live (and when they should stop being live)
@@ -27,6 +23,13 @@ Schedule when your blocks should go live (and when they should stop being live)
    to them in the main editor window.
 
 == Changelog ==
+
+------------------------------------------------------------------------------------------------------------------
+Version 0.6.0
+	- Removed requirement for the Gutenberg plugin as Scheduled Blocks now relies on internal WP_Block_Parser()
+
+------------------------------------------------------------------------------------------------------------------
+
 
 ------------------------------------------------------------------------------------------------------------------
 Version 0.5.0
