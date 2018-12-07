@@ -207,7 +207,7 @@ class Scheduled_Blocks {
 	public static function scheduled_blocks_extract_scheduled_blocks_from_content( $content ) {
 
 		$parser = new WP_Block_Parser();
-		$blocks = $new_parser->parse( $content );
+		$blocks = $parser->parse( $content );
 
 		if ( empty( $blocks ) ) {
 			return array();
